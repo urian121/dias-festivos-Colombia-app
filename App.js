@@ -10,7 +10,7 @@ import {
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import { StatusBar } from "expo-status-bar";
-import { colombiaHolidays2025, getHolidayName } from "./holidays2025";
+import { holidays, getHolidayDates, getHolidayName } from "./holidays";
 import styles from "./assets/css/homeStyle";
 
 // Configuración del idioma español para el calendario
@@ -63,17 +63,26 @@ export default function App() {
   const [upcomingHolidays, setUpcomingHolidays] = useState([]);
   const [currentHoliday, setCurrentHoliday] = useState(null);
 
-  // Prepare calendar marked dates
-  // Prepare calendar marked dates
-  const markedDates = colombiaHolidays2025.reduce((acc, date) => {
+  const [visibleYear, setVisibleYear] = useState(new Date().getFullYear());
+  const holidayDates = getHolidayDates(visibleYear);
+
+  //const year = 2025;
+  const year = new Date().getFullYear();
+
+  if (getHolidayDates(year).length === 0) {
+    console.warn(`No hay festivos definidos para el año ${year}`);
+  }
+
+  // Marcar los días festivos en el calendario
+  const markedDates = holidayDates.reduce((acc, date) => {
     acc[date] = {
       selected: true,
-      selectedColor: "#ffcccb", // Un rojo claro para el fondo del círculo
-      selectedTextColor: "#E63946", // Color del texto dentro del círculo (rojo)
+      selectedColor: "#ffcccb",
+      selectedTextColor: "#E63946",
       customStyles: {
         container: {
           borderWidth: 2,
-          borderColor: "#E63946", // Borde rojo
+          borderColor: "#E63946",
         },
       },
     };
@@ -98,7 +107,7 @@ export default function App() {
     const today = new Date();
     const todayStr = today.toISOString().split("T")[0];
 
-    const upcoming = colombiaHolidays2025
+    const upcoming = holidayDates
       .filter((date) => date >= todayStr)
       .slice(0, 3)
       .map((date) => ({
@@ -113,8 +122,7 @@ export default function App() {
   const handleDayPress = (day) => {
     setSelectedDate(day.dateString);
 
-    // If selected day is a holiday, show modal with details
-    if (colombiaHolidays2025.includes(day.dateString)) {
+    if (holidayDates.includes(day.dateString)) {
       setCurrentHoliday({
         date: day.dateString,
         name: getHolidayName(day.dateString),
@@ -170,7 +178,7 @@ export default function App() {
 
           {/* Calendar section */}
           <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>Calendario Anual</Text>
+            <Text style={styles.sectionTitle}>Calendario {visibleYear}</Text>
             <Calendar
               markedDates={markedDates}
               markingType="custom"
@@ -178,6 +186,9 @@ export default function App() {
               monthFormat={"MMMM yyyy"}
               hideExtraDays={true}
               firstDay={1}
+              onMonthChange={(month) => {
+                setVisibleYear(month.year); // Esto actualiza automáticamente el año visible
+              }}
               enableSwipeMonths={true}
               theme={{
                 calendarBackground: "#ffffff",

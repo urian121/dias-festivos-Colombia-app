@@ -42,17 +42,20 @@ const styles = StyleSheet.create({
   // Secciones y tarjetas
   sectionContainer: {
     backgroundColor: COLORS.white,
-    borderRadius: 12,
     padding: 16,
     marginBottom: 20,
     shadowColor: "#000",
+    /*
+    borderRadius: 12,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
+    */
   },
   sectionTitle: {
     fontSize: 18,
+    textAlign: "center",
     fontWeight: "600",
     color: COLORS.textDark,
     marginBottom: 12,
@@ -69,7 +72,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 10,
-    borderBottomWidth: 1,
+    /*borderBottomWidth: 1,*/
     borderBottomColor: COLORS.gray,
   },
   dateBadge: {
